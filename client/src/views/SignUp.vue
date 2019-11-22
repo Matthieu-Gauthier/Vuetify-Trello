@@ -1,56 +1,64 @@
  
 <template>
-  <v-container fluid>
-    <v-slide-y-transition mode="out-in">
-      <v-layout column align-center>
-        <v-form
-          v-if="!loading"
-          v-model="valid"
-          @submit.prevent="signUp"
-          @keydown.prevent.enter>
-          <v-text-field
-            v-model="user.username"
-            :rules="notEmptyRules"
-            label="Username"
-            required
-          ></v-text-field>
-          <v-text-field
-            v-model="user.displayName"
-            :rules="notEmptyRules"
-            label="Display Name"
-            required
-          ></v-text-field>
-          <v-text-field
-            v-model="user.password"
-            :rules="notEmptyRules"
-            label="Password"
-            type="password"
-            required
-          ></v-text-field>
-          <v-text-field
-            v-model="user.confirmPassword"
-            :rules="confirmPasswordRules"
-            label="Confirm Password"
-            type="password"
-            required
-          ></v-text-field>
-          <v-text-field
-            v-model="user.imageUrl"
-            :rules="notEmptyRules"
-            label="Image URL"
-            required
-          ></v-text-field>
-          <v-btn type="submit" :disabled="!valid">SignUp</v-btn>
-        </v-form>
-        <v-progress-circular
-          v-if="loading"
-          :size="70"
-          :width="7"
-          indeterminate
-          color="primary">
-        </v-progress-circular>
-      </v-layout>
-    </v-slide-y-transition>
+<v-container fluid>
+      <v-form
+        v-model="valid"
+        @submit.prevent="signUp"
+        @keydown.prevent.enter>
+        <v-card
+         class="mx-auto"
+            max-width="600">
+            <v-img
+              class="primary--text align-end"
+              height="100px"
+              src="https://media.istockphoto.com/vectors/welcome-poster-with-brush-strokes-vector-id940891868?k=6&m=940891868&s=612x612&w=0&h=awJY_W7nGybC5pRtygpA3QBoNc2TSG4ZFKdGzMbQfUI="
+            >
+            </v-img>
+          <v-container v-if="!loading">
+            <v-text-field
+              v-model= "user.username"
+              :rules= "notEmptyRules"
+              label="Username"
+              required>
+            </v-text-field>
+            <v-spacer></v-spacer>
+            <v-text-field
+              v-model= "user.displayName"
+              :rules= "notEmptyRules"
+              label="Display Name"
+              required>
+            </v-text-field>
+            <v-text-field
+              v-model= "user.password"
+              :rules= "notEmptyRules"
+              label="Password"
+              type="password"
+              required>
+            </v-text-field>
+            <v-text-field
+              v-model= "user.confirmPassword"
+              :rules= "confirmPasswordRules"
+              label="Confirm Password"
+              type="password"
+              required>
+            </v-text-field>
+            <v-text-field
+              v-model= "user.imageUrl"
+              :rules= "notEmptyRules"
+              label="Image Url"
+              required>
+            </v-text-field>
+            <v-btn type="submit" :disable="!valid">SignUp</v-btn>
+          </v-container>
+          <v-progress-circular
+            v-if="loading"
+            :size="70"
+            :width="7"
+            indeterminate
+            color="primary">
+          </v-progress-circular>
+        </v-card>
+    </v-form>
   </v-container>
 </template>
 

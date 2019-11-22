@@ -1,21 +1,31 @@
 <template>
   <v-app>
-    <v-app-bar app>
-      <v-toolbar-title class="headline text-uppercase">
-        <span>Vuetify</span>
-        <span class="font-weight-light">MATERIAL DESIGN</span>
+    <v-app-bar class= "primary lighten-1 text-center" app>
+      <v-toolbar-title class="headline">
+        <span class="font-weight-light">Vuetify-Trello</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-
-      <!--<v-btn v-if="showLogin" :to="{name:'login'}">Login</v-btn>-->
       <v-btn v-if="showSignUp" :to="{name:'signup'}">SingUp</v-btn>
-
       <createBoard v-if="this.$route.path === '/boards'"></createBoard>
       <v-btn v-if="showLogout" @click="logout">Logout</v-btn>
     </v-app-bar>
     <v-content>
-      <router-view />
+     <router-view></router-view>
     </v-content>
+    <v-footer
+      v-bind="localAttrs"
+      :padless="true"
+      :fixed ="fixed" >
+      <v-card
+        flat
+        tile
+        width="100%"
+        class="primary lighten-1 text-center">
+        <v-card-text class="white--text">
+          {{ new Date().getFullYear() }} — <strong>Made by Got </strong>
+        </v-card-text>
+      </v-card>
+    </v-footer>
   </v-app>
 </template>
 

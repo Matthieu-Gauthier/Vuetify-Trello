@@ -1,11 +1,13 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import SignUp from './views/SignUp.vue'
-import LogIn from './views/Login.vue'
-import Home from './views/Home.vue'
+import Vue from 'vue';
+import Router from 'vue-router';
 import store from './store/store';
 
-Vue.use(Router)
+import SignUp from './views/SignUp.vue';
+import Login from './views/Login.vue';
+import Home from './views/Home.vue';
+import Boards from './views/Boards.vue';
+
+Vue.use(Router);
 
 
 
@@ -28,12 +30,17 @@ export default new Router({
     {
       path: '/login',
       name: 'login',
-      component: LogIn
+      component: Login
     },
     {
       path: '/signup',
       name: 'signup',
       component: SignUp
+    },
+    {
+      path: '/boards',
+      name: 'boards',
+      component: Boards
     },
     {
       path: '/about',
