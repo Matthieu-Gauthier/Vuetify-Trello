@@ -1,0 +1,6 @@
+[submodule "serveur"]
+	path = serveur
+	url = serveur
+[submodule "client"]
+	path = client
+	url = client
