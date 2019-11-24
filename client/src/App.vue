@@ -2,10 +2,10 @@
   <v-app>
     <v-app-bar class= "primary lighten-1 text-center" app>
       <v-toolbar-title class="headline">
-        <span class="font-weight-light">Vuetify-Trello</span>
+        <span class="white--text">Vuetify-Trello</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn v-if="showSignUp" :to="{name:'signup'}">SingUp</v-btn>
+      <v-btn v-if="showSignUp" :to="{name:'signup'}">SignUp</v-btn>
       <createBoard v-if="this.$route.path === '/boards'"></createBoard>
       <v-btn v-if="showLogout" @click="logout">Logout</v-btn>
     </v-app-bar>
@@ -13,9 +13,7 @@
      <router-view></router-view>
     </v-content>
     <v-footer
-      v-bind="localAttrs"
-      :padless="true"
-      :fixed ="fixed" >
+      :padless="true">
       <v-card
         flat
         tile
