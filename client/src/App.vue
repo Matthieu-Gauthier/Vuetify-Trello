@@ -5,9 +5,12 @@
         <span class="white--text">Vuetify-Trello</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn v-if="showSignUp" :to="{name:'signup'}">SignUp</v-btn>
-      <createBoard v-if="this.$route.path === '/boards'"></createBoard>
-      <v-btn v-if="showLogout" @click="logout">Logout</v-btn>
+      <v-btn class="mx-1" v-if="showSignUp" :to="{name:'signup'}">SignUp</v-btn>
+      <v-btn class="mx-1" v-if="showLogin" :to="{name:'login'}">Login</v-btn>
+      <v-btn class="mx-2" v-if="showLogout" @click="logout" text color="white">Logout</v-btn>
+      <v-avatar>
+        <img v-if="user" :src="user.user.imageUrl">
+      </v-avatar>
     </v-app-bar>
     <v-content>
      <router-view></router-view>
@@ -29,19 +32,17 @@
 
 <script>
 import store from "./store/store";
-import { mapActions, mapMutations } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 
 function ifLogin(store, data) {
   store
     .dispatch("auth/authenticate")
     .then(() => {
-      console.log("!!!!!!!!!=============1ere45 already login");
       data.showLogin = false;
       data.showSignUp = false;
       data.showLogout = true;
     })
     .catch(() => {
-      console.log("=============1ere45 no login");
       data.showSignUp = true;
       data.showLogout = false;
     });
@@ -51,16 +52,17 @@ export default {
   name: "App",
   components: {
   },
-
+  computed: {
+    ...mapState('auth', { user: 'payload' }),
+  },
   data: vm => ({
-    //
     showLogin: false,
     showSignUp: false,
     showLogout: true
   }),
   updated() {
     ifLogin(this.$store, this.$data);
-    console.log("aaaaaaaa");
+    console.log(this.$store);
   },
   methods: {
     ...mapActions("auth", { authLogout: "logout" }),
@@ -68,7 +70,6 @@ export default {
     logout() {
       this.authLogout()
         .then(() => {
-          console.log("======12386===== logout success");
           this.$data.showLogin = true;
           this.$data.showSignUp = true;
           this.$data.showLogout = false;
@@ -76,7 +77,7 @@ export default {
         })
         .catch(e => {
           // Show login page (potentially with `e.message`)
-          console.error("Authentication error", e);
+          console.error("Logout error", e);
         });
     }
   }

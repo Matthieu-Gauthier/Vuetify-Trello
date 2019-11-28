@@ -1,3 +1,3 @@
-import feathersClient, { makeAuthPlugin } from '../feathers-client'
+import { makeAuthPlugin } from '../feathers-client'
 
 export default makeAuthPlugin({ userService: 'users' })

@@ -5,15 +5,11 @@
         v-model="valid"
         @submit.prevent="signUp"
         @keydown.prevent.enter>
-        <v-card
-         class="mx-auto"
-            max-width="600">
-            <v-img
-              class="primary--text align-end"
-              height="100px"
-              src="https://media.istockphoto.com/vectors/welcome-poster-with-brush-strokes-vector-id940891868?k=6&m=940891868&s=612x612&w=0&h=awJY_W7nGybC5pRtygpA3QBoNc2TSG4ZFKdGzMbQfUI="
-            >
-            </v-img>
+        <v-card class="mx-auto" max-width="400">
+          <v-toolbar flat color="primary lighten-1 text-center" class="white--text">
+            <v-icon class="white--text">mdi-account-plus</v-icon>
+            <v-toolbar-title mr class="mx-3 font-weight-light">User Signup</v-toolbar-title>
+          </v-toolbar>
           <v-container v-if="!loading">
             <v-text-field
               v-model= "user.username"
@@ -48,7 +44,7 @@
               label="Image Url"
               required>
             </v-text-field>
-            <v-btn type="submit" :disable="!valid">SignUp</v-btn>
+            <v-btn type="submit" :disabled="!valid">SignUp</v-btn>
           </v-container>
           <v-progress-circular
             v-if="loading"
@@ -64,7 +60,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { notEmptyRules } from 'validators';
+import { notEmptyRules } from '@/validators';
 export default {
   name: 'signUp',
   data: vm => ({

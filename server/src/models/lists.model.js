@@ -1,19 +1,15 @@
-// boards-model.js - A mongoose model
+// lists-model.js - A mongoose model
 // 
 // See http://mongoosejs.com/docs/models.html
 // for more of what you can do here.
 module.exports = function (app) {
   const mongooseClient = app.get('mongooseClient');
   const { Schema } = mongooseClient;
-  const boards = new Schema({
+  const lists = new Schema({
     name: { type: String, required: true },
-    background: { type: String, lowercase: true },
-    url: { type: String, },
-    ownerId: { type: Schema.Types.ObjectId, ref: 'users' },
-    memberIds: [{
-      type: Schema.Types.ObjectId,
-      ref: 'users'
-    }],
+    order: { type: Number, required: true, default: 0,},
+    archived: { type: Boolean, required: true, default: false,},
+    boardId: { type: Schema.Types.ObjectId, ref: 'boards' },
   }, {
     timestamps: true
   });
@@ -21,8 +17,8 @@ module.exports = function (app) {
   // This is necessary to avoid model compilation errors in watch mode
   // see https://github.com/Automattic/mongoose/issues/1251
   try {
-    return mongooseClient.model('boards');
+    return mongooseClient.model('lists');
   } catch (e) {
-    return mongooseClient.model('boards', boards);
+    return mongooseClient.model('lists', lists);
   }
 };

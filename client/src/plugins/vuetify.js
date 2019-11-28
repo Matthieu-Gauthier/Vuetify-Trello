@@ -1,13 +1,18 @@
 
 import '@fortawesome/fontawesome-free/css/all.css'
+import '@mdi/font/css/materialdesignicons.css'
 import Vue from 'vue';
 import Vuetify from 'vuetify/lib';
 
 Vue.use(Vuetify);
+const my_icons = {
+  signup: 'mdiAccountAlert',
+}
 
 export default new Vuetify({
   icons: {
     iconfont: 'mdi',
+    values: my_icons,
   },
   theme: {
     themes: {

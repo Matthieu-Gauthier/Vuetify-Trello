@@ -4,33 +4,32 @@ import store from './store/store';
 
 import SignUp from './views/SignUp.vue';
 import Login from './views/Login.vue';
-import Home from './views/Home.vue';
 import Boards from './views/Boards.vue';
+import Board from './views/Board.vue';
 
 Vue.use(Router);
 
-
-
+function isLoggedIn(to, from, next) {
+  store.dispatch('auth/authenticate').then(() => {
+    next();
+  }).catch(() => {
+    next('/login');
+  });
+}
 export default new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: Home,
-      beforeEnter(to, from, next) {
-        store.dispatch('auth/authenticate').then(() => {
-          next('/home');
-        }).catch(() => {
-          next('/login');
-        });
-      },
-    },
-    {
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      path: '/',
+      name: '/',
+      component: Boards,
+      beforeEnter: isLoggedIn
     },
     {
       path: '/signup',
@@ -40,7 +39,14 @@ export default new Router({
     {
       path: '/boards',
       name: 'boards',
-      component: Boards
+      component: Boards,
+      beforeEnter: isLoggedIn
+    },
+    {
+      path: '/boards/:id',
+      name: 'board',
+      component: Board,
+      beforeEnter: isLoggedIn
     },
     {
       path: '/about',

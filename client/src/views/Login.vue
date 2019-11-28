@@ -4,20 +4,20 @@
       <v-layout column align-center>
         <v-card max-width="500" max-height="500" min-width="300" min-height="300" class="overflow-hidden">
           <v-toolbar flat color="primary lighten-1 text-center" class="white--text">
-            <v-icon class="white--text"> mdi-account</v-icon>
-            <v-toolbar-title class="font-weight-light">User Profile</v-toolbar-title>
+            <v-icon class="white--text">mdi-account </v-icon>
+            <v-toolbar-title class="mx-3 font-weight-light">User Profile</v-toolbar-title>
           </v-toolbar>
           <v-spacer></v-spacer>
             <v-form
               v-if="!loading"
               v-model="valid"
-              @submit.prevent="login({ valid, userinfo })"
+              @submit.prevent="login({ valid, user })"
               @keydown.prevent.enter
             >
               <v-card-text>
-                <v-text-field v-model="userinfo.username" :rules="notEmptyRules" label="Username" required></v-text-field>
+                <v-text-field v-model="user.username" :rules="notEmptyRules" label="Username" required></v-text-field>
                 <v-text-field
-                  v-model="userinfo.password"
+                  v-model="user.password"
                   :rules="notEmptyRules"
                   label="Password"
                   type="password"
@@ -35,12 +35,12 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import { notEmptyRules } from "validators";
+import { notEmptyRules } from '@/validators';
 export default {
   name: "login",
   data: () => ({
     valid: false,
-    userinfo: {
+    user: {
       username: "",
       password: ""
     },
@@ -51,25 +51,22 @@ export default {
   },
   methods: {
       ...mapActions('auth',['authenticate']),
-    login() {
+    async login() {
       this.authenticate({
         strategy: "local",
-        username: this.userinfo.username,
-        password: this.userinfo.password
+        ...this.user,
       })
-        .then(() => {
-          // Logged in
-  
+        .then(async () => {
+          // Login ok
+          await this.authenticate();
           this.$router.push("/boards")
         })
         .catch(err => {
-            
           // Show login page (potentially with `e.message`)
           alert("please input correct username and password")
           console.error("Authentication error", err);
         });
     }
-    //...mapActions('localAuth', ['login']),
   }
 };
 </script>
