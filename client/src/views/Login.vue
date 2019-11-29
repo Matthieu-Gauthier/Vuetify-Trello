@@ -2,14 +2,13 @@
   <v-container>
     <v-slide-y-transition class= "center" mode="out-in">
       <v-layout column align-center>
-        <v-card max-width="500" max-height="500" min-width="300" min-height="300" class="overflow-hidden">
+        <v-card v-if="!loading" max-width="500" max-height="500" min-width="300" min-height="300" class="overflow-hidden">
           <v-toolbar flat color="primary lighten-1 text-center" class="white--text">
             <v-icon class="white--text">mdi-account </v-icon>
             <v-toolbar-title class="mx-3 font-weight-light">User Profile</v-toolbar-title>
           </v-toolbar>
           <v-spacer></v-spacer>
             <v-form
-              v-if="!loading"
               v-model="valid"
               @submit.prevent="login({ valid, user })"
               @keydown.prevent.enter
