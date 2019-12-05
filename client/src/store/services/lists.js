@@ -12,6 +12,7 @@ class List extends BaseModel {
   static instanceDefaults() {
     return {
       name: '',
+      color: '#FF000000',
       order: '',
       archived: '',
       boardId: '',

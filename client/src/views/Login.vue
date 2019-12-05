@@ -2,7 +2,7 @@
   <v-container>
     <v-slide-y-transition class= "center" mode="out-in">
       <v-layout column align-center>
-        <v-card v-if="!loading" max-width="500" max-height="500" min-width="300" min-height="300" class="overflow-hidden">
+        <v-card v-if="!loading" max-width="500" max-height="500" min-width="300" min-height="300" class="overflow-hidden" >
           <v-toolbar flat color="primary lighten-1 text-center" class="white--text">
             <v-icon class="white--text">mdi-account </v-icon>
             <v-toolbar-title class="mx-3 font-weight-light">User Profile</v-toolbar-title>
@@ -25,6 +25,9 @@
                 <v-btn type="submit" :disabled="!valid">Login</v-btn>
               </v-card-text>
             </v-form>
+            <v-alert v-if="WrongLogin" type="error" dismissible>
+              "Please input correct username and password !"
+            </v-alert>
           </v-card>
         <v-progress-circular v-if="loading" :size="70" :width="7" indeterminate color="primary"></v-progress-circular>
       </v-layout>
@@ -39,11 +42,12 @@ export default {
   name: "login",
   data: () => ({
     valid: false,
+    WrongLogin: false,
     user: {
       username: "",
       password: ""
     },
-    notEmptyRules
+    notEmptyRules,
   }),
   computed: {
     ...mapState("auth", { loading: "isAuthenticatePending" })
@@ -62,10 +66,14 @@ export default {
         })
         .catch(err => {
           // Show login page (potentially with `e.message`)
-          alert("please input correct username and password")
-          console.error("Authentication error", err);
+          this.WrongLogin = true
         });
+    },
+    resetWrongLogin() {
+
+      this.WrongLogin = false
     }
+
   }
 };
 </script>

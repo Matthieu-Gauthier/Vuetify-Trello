@@ -1,19 +1,53 @@
 <template>
-  <v-container>
-    <v-slide-y-transition class= "center" mode="out-in">
-      <v-layout row align-center wrap>  
-        <v-progress-circular v-if="loadingBoard || loadingLists" :size="70" :width="7" indeterminate color="primary"></v-progress-circular>
-        <v-flex class="pa-2" sm3 v-for="list in lists" :key="list._id">
-          <v-card class="column">
-            <v-card-title>{{list.name}}</v-card-title>
-            <div>
-              <ul v-if= cardsByListId[list._id]>
-                <li v-for="card in cardsByListId[list._id]" :key="card._id" >{{card.title}}</li>
-              </ul>
-            </div>
-            <create-card :listId= "list._id" :boardId= "$route.params.id"></create-card>
-          </v-card>
-        </v-flex>
+  <v-container fluid grid-list-lg>
+      <v-progress-circular
+        v-if="loadingBoard || loadingLists"
+        :size="70"
+        :width="7"
+        indeterminate
+        color="primary">
+      </v-progress-circular>
+      <v-flex xs12>
+        <v-layout row wrap>
+          <v-flex xs12>
+            <h2 v-if="board">{{board.name}}</h2>
+          </v-flex>
+          <v-flex sm3 v-for="list in lists" :key="list._id" pa-1 mx-auto>
+            <v-layout row wrap>
+              <v-flex>
+                <v-card :color="list.color">
+                  <v-card-title>
+                    <v-layout column>
+                      <v-flex>
+                        <div class="headline">{{list.name}}</div>
+                      </v-flex>
+                      <v-flex pa-1
+                        v-if= cardsByListId[list._id]
+                        v-for="card in cardsByListId[list._id]" 
+                        :key="card._id">
+                        <v-card>
+                          <v-container fluid grid-list-lg>
+                            <v-layout row>
+                              <v-flex xs12>
+                                <div>
+                                  <div class="headline">{{card.title}}</div>
+                                </div>
+                              </v-flex>
+                            </v-layout>
+                          </v-container>
+                        </v-card>
+                      </v-flex>
+                    </v-layout>
+                  </v-card-title>
+                  <v-card-actions>
+                    <create-card :listId= "list._id" :boardId= "$route.params.id"></create-card>
+                  </v-card-actions>
+                </v-card>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+        </v-layout>
+      </v-flex>
         <v-form
         v-if="!creatingList"
         v-model="validList"
@@ -23,6 +57,20 @@
             <v-card-title class="primary lighten-1 white--text align-end" >Create List</v-card-title>
             <v-container>
               <v-text-field v-model= "list.name" :rules="notEmptyRules" label="Name" required></v-text-field>
+              <v-expansion-panels>
+                <v-expansion-panel>
+                  <v-expansion-panel-header>
+                    Color
+                    <v-row justify="space-around">
+                      <v-avatar :color="list.color">
+                      </v-avatar>
+                    </v-row>
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content>
+                    <v-color-picker v-model="list.color" flat mode="hex" canvas-height="100" hide-inputs></v-color-picker>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
             </v-container>
             <v-card-actions>
               <v-btn type="submit" :disabled="!validList" class="primary lighten-1 white--text align-end">
@@ -31,8 +79,6 @@
             </v-card-actions>
           </v-card>
         </v-form>
-      </v-layout>
-    </v-slide-y-transition>
   </v-container>
 </template>
 
@@ -52,6 +98,7 @@ export default {
       name: '',
       order: 0,
       archived: false,
+      color:'#FF000000',
     },
     notEmptyRules,
   }),
@@ -93,6 +140,7 @@ export default {
               name: '',
               order: 0,
               archived: false,
+              color:'#FF000000',
             };
           })
           .catch((err) => {

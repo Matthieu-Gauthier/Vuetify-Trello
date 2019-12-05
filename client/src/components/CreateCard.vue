@@ -1,13 +1,13 @@
 <template>
-  <v-container>
-    <v-slide-y-transition class= "center" mode="out-in">
-      <v-layout row align-center wrap>  
+  <v-container fluid>
+    <v-layout row wrap>
+      <v-flex xs12>
         <v-form
         v-if="!creatingCard"
         v-model="validCard"
         @submit.prevent="createCard"
         @keydown.prevent.enter>
-          <v-card width="250" class="mx-1">
+          <v-card>
             <v-card-title class="primary lighten-1 white--text align-end" >Create Card</v-card-title>
             <v-container>
               <v-text-field v-model= "card.title" :rules="notEmptyRules" label="Title" required></v-text-field>
@@ -19,8 +19,15 @@
             </v-card-actions>
           </v-card>
         </v-form>
-      </v-layout>
-    </v-slide-y-transition>
+      </v-flex>
+      <v-progress-circular align-center
+        v-if="creatingCard"
+        :size="70"
+        :width="7"
+        indeterminate
+        color="primary">
+      </v-progress-circular>
+    </v-layout>
   </v-container>
 </template>
 
@@ -41,12 +48,6 @@ export default {
     },
     notEmptyRules,
   }),
-    computed: {
-    ...mapState('auth', { user: 'payload' }),
-    ...mapState('cards', {
-      creatingCard: 'isCreatePending',
-    }),
-  },
   methods: {
     createCard() {
       if (this.validCard) {
@@ -54,10 +55,12 @@ export default {
         this.card.boardId = this.boardId;
         this.card.listId = this.listId;
         const card = new Card(this.card);
-        console.log(this.card)
+        this.creatingCard = true;
         card.save()
          .then((card) => {
-            console.log(card)
+            setTimeout(() => {
+              this.creatingCard = false;
+            }, 1000);
             this.card ={
               title: '',
               members: [],

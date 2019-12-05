@@ -7,10 +7,10 @@
       <v-spacer></v-spacer>
       <v-btn class="mx-1" v-if="showSignUp" :to="{name:'signup'}">SignUp</v-btn>
       <v-btn class="mx-1" v-if="showLogin" :to="{name:'login'}">Login</v-btn>
-      <v-btn class="mx-2" v-if="showLogout" @click="logout" text color="white">Logout</v-btn>
       <v-avatar>
         <img v-if="user" :src="user.user.imageUrl">
       </v-avatar>
+      <v-btn class="mx-2" v-if="showLogout" @click="logout" text color="white">Logout</v-btn>
     </v-app-bar>
     <v-content>
      <router-view></router-view>
