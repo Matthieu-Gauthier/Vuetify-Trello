@@ -1,5 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { setField } = require('feathers-authentication-hooks')
+const { setField } = require('feathers-authentication-hooks');
 
 //Permet de rendre l'utilisateur en cours proprietaire de l'enregistrement
 const setUserId = setField({

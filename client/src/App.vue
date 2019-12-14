@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar class= "primary lighten-1 text-center" app>
       <v-toolbar-title class="headline">
-        <span class="white--text">Vuetify-Trello</span>
+        <v-btn class="mx-2" :to="{name:'boards'}" text color="white">Trello </v-btn>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn class="mx-1" v-if="showSignUp" :to="{name:'signup'}">SignUp</v-btn>
