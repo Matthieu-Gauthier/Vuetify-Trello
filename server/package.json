@@ -44,6 +44,7 @@
     "feathers-authentication-hooks": "^1.0.1",
     "feathers-mongoose": "^8.0.3",
     "helmet": "^3.21.1",
+    "mongodb": "^3.4.0",
     "mongodb-core": "^3.2.7",
     "mongoose": "^5.7.3",
     "serve-favicon": "^2.5.0",
