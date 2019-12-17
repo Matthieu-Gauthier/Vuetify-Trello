@@ -7,17 +7,17 @@
         indeterminate
         color="primary">
       </v-progress-circular>
-      <v-flex xs12 v-if="boardsError">
+      <v-flex xs10 pa-3 v-if="boardsError">
         <v-alert  type="error">
           {{boardsError.message}}
         </v-alert>
       </v-flex>
-      <v-flex xs12 v-if="!boardsError">
+      <v-flex xs10 pa-3 v-if="!boardsError">
         <v-layout row wrap>
           <v-flex xs12>
             <h2 v-if="board">{{board.name}}</h2>
           </v-flex>
-          <v-flex sm3 v-for="list in lists" :key="list._id" pa-1>
+          <v-flex sm2 v-for="list in lists" :key="list._id" pa-1>
             <v-layout row wrap>
               <v-flex>
                 <v-card :color="list.color" @dragover="setDroppingList($event, list)" :class="{ 'teal lighten-4': droppingList == list }" v-if="!boardsError">
@@ -45,49 +45,78 @@
                     </v-layout>
                   </v-card-title>
                   <v-card-actions>
-                    <create-card :listId= "list._id" :boardId= "$route.params.id"></create-card>
+                    <create-card 
+                      :createActivity = "createActivity"
+                      :list= "list" 
+                      :boardId= "$route.params.id">
+                    </create-card>
                   </v-card-actions>
                 </v-card>
               </v-flex>
             </v-layout>
           </v-flex>
+          <v-flex xs2 >
+             <v-navigation-drawer
+              fixed
+              clipped
+              absolute
+              color: secondary
+              v-if="ShowActivities"
+              right>
+              <v-card heigth="100%" flat>
+                <v-list three-line>
+                  <v-list-item v-for="activity in activitiesByDate" :key="activity._id">
+                    <v-list-item-icon>
+                      <v-icon color="primary">mdi-ticket</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-sub-title v-html="markModify(activity.text)"></v-list-item-sub-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-card>
+            </v-navigation-drawer>
+          </v-flex>
         </v-layout>
       </v-flex>
-      <v-form
-      v-if="!creatingList && !boardsError"
-      v-model="validList"
-      @submit.prevent="createList"
-      @keydown.prevent.enter>
-        <v-card width="250" class="mx-1">
-          <v-card-title class="primary lighten-1 white--text align-end" >Create List</v-card-title>
-          <v-container>
-            <v-text-field v-model= "list.name" :rules="notEmptyRules" label="Name" required></v-text-field>
-            <v-expansion-panels>
-              <v-expansion-panel>
-                <v-expansion-panel-header>
-                  Color
-                  <v-row justify="space-around">
-                    <v-avatar :color="list.color">
-                    </v-avatar>
-                  </v-row>
-                </v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <v-color-picker v-model="list.color" flat mode="hex" canvas-height="100" hide-inputs></v-color-picker>
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-expansion-panels>
-          </v-container>
-          <v-card-actions>
-            <v-btn type="submit" :disabled="!validList" class="primary lighten-1 white--text align-end">
-              Create
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-form>
+        <v-flex sm2 pa-3 mx-auto>
+          <v-form
+          v-if="!creatingList && !boardsError"
+          v-model="validList"
+          @submit.prevent="createList"
+          @keydown.prevent.enter>
+            <v-card :color="list.color" mx-auto>
+              <v-card-title class="primary lighten-1 white--text align-end" >Create List</v-card-title>
+              <v-container>
+                <v-text-field v-model= "list.name" :rules="notEmptyRules" label="Name" required></v-text-field>
+                <v-expansion-panels popout>
+                  <v-expansion-panel>
+                    <v-expansion-panel-header>
+                      Color
+                      <v-row justify="end" class="ma-0">
+                        <v-avatar :color="list.color">
+                        </v-avatar>
+                      </v-row>
+                    </v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                      <v-color-picker v-model="list.color" mode="hexa" canvas-height="100" hide-inputs></v-color-picker>
+                    </v-expansion-panel-content>
+                  </v-expansion-panel>
+                </v-expansion-panels>
+              </v-container>
+              <v-card-actions>
+                <v-btn type="submit" :disabled="!validList" class="primary lighten-1 white--text align-end">
+                  Create
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-form>
+        </v-flex>
   </v-container>
 </template>
 
 <script>
+import marked from 'marked';
 import { notEmptyRules } from '@/validators';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import CreateCard from '../components/CreateCard';
@@ -100,6 +129,7 @@ export default {
     droppingList: null,
     draggingCard: null,
     validList: false,
+    ShowActivities: true,
     board: {},
     list: {
       name: '',
@@ -130,18 +160,26 @@ export default {
     }).then(Response => {
       const cards = Response.data || Response;
     })
+      this.findActivities({
+      query: {
+        boardId: idBoard,
+      }
+    }).then(Response => {
+      const activities = Response.data || Response;
+    });
   },
   methods: {
     ...mapActions('boards', { getBoard: 'get' }),
     ...mapActions('lists', { findLists: 'find' }),
     ...mapActions('cards', { findCards: 'find' }),
-    createList() {
+    ...mapActions('activities', { findActivities: 'find' }),
+    async createList() {
       if (this.validList) {
-        const { List } = this.$FeathersVuex.api;
+        const { List, Activity } = this.$FeathersVuex.api;
         this.list.boardId = this.$route.params.id;
         const list = new List(this.list);
         console.log(this.list)
-        list.save()
+        await list.save()
          .then((list) => {
             this.list ={
               name: '',
@@ -149,11 +187,20 @@ export default {
               archived: false,
               color:'#FF000000',
             };
+            this.createActivity(`**${this.user.user.displayName}** created List **${list.name}**`)
           })
           .catch((err) => {
             console.error(err)
           })
       }
+    },
+    async createActivity(text) {
+      const { Activity } = this.$FeathersVuex.api;
+      const activity = new Activity();
+      activity.text = text;
+      activity.boardId = this.$route.params.id;
+      activity.userId = this.user.userId;
+      await activity.save();
     },
     startDraggingCard(card) {
       this.draggingCard = card
@@ -162,13 +209,21 @@ export default {
       this.droppingList = list
       event.preventDefault();
     },
-    dropCard() {
+    async dropCard() {
       if (this.droppingList) {
-        this.draggingCard.listId = this.droppingList._id;
-        this.draggingCard.save();
+        if (this.draggingCard.listId !== this.droppingList._id){
+          const fromList = this.lists.find(list => list._id === this.draggingCard.listId)
+          const toList = this.lists.find(list => list._id === this.droppingList._id)
+          this.draggingCard.listId = this.droppingList._id;
+          await this.draggingCard.save();
+          this.createActivity(`**${this.user.user.displayName}** moved card **${this.draggingCard.title}** from **${fromList.name}** to **${toList.name}**`)
+        }
       };
       this.droppingList = null;
       this.draggingCard = null
+    },
+    markModify(text) {
+      return marked(text);
     },
   },
   computed: {
@@ -177,16 +232,28 @@ export default {
     loadingBoard: 'isGetPending',
     boardsError: 'errorOnGet',
     }),
-    ...mapState('lists', {
-    loadingLists: 'isFindPending',
-    creatingList: 'isCreatePending',
-    listsError: 'errorOnfind',
-    }),
+      ...mapState('lists', {
+      loadingLists: 'isFindPending',
+      creatingList: 'isCreatePending',
+      listsError: 'errorOnfind',
+      }),      
+      ...mapState('activities', {
+      loadingActivities: 'isFindPending',
+      creatingActivity: 'isCreatePending',
+      }),
     ...mapState('cards', {
     cardsError: 'errorOnfind',
     }),
     ...mapGetters('lists', { findListsInStore: 'find'}),
     ...mapGetters('cards', { findCardsInStore: 'find'}),
+    ...mapGetters('activities', { findActivitiesInStore: 'find'}),
+    activities() {
+        return this.findActivitiesInStore({
+        query: {
+          boardId: this.$route.params.id,
+        }
+      }).data
+    },
     lists() {
       return this.findListsInStore({
         query: {
@@ -207,7 +274,10 @@ export default {
         byId[card.listId].push(card);
         return byId;
       }, {})
-    }
+    },
+    activitiesByDate() {
+      return this.activities.slice().reverse()
+    },
   },
 };
 </script>

@@ -7,7 +7,8 @@ module.exports = function (app) {
   const { Schema } = mongooseClient;
   const activities = new Schema({
     text: { type: String, required: true },
-    boardId: { type: Schema.Types.ObjectId, ref: 'boards' },
+    boardId: { type: Schema.Types.ObjectId,required: true, ref: 'boards' },
+    userId: { type: Schema.Types.ObjectId,required: true, ref: 'users' },
   }, {
     timestamps: true
   });

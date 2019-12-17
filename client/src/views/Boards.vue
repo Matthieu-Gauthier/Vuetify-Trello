@@ -1,11 +1,10 @@
 <template>
   <v-container>
-    <v-slide-y-transition class= "center" mode="out-in">
-      <v-layout row align-center wrap>  
+      <v-layout row align-center wrap pa-2>  
         <v-progress-circular v-if="loading" :size="70" :width="7" indeterminate color="primary"></v-progress-circular>
         <v-flex class="pa-2" v-if="!loading" sm3 v-for="board in boards" :key="board._id">
           <v-card class="column">
-            <v-img class="white--text align-end" height="200px" :src="board.background">
+            <v-img class="white--text align-end" max-height="250px" :src="board.background">
               <v-card-title>{{board.name}}</v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
@@ -16,26 +15,27 @@
             </v-img>
           </v-card>
         </v-flex>
-        <v-form
-        v-if="!creating"
-        v-model="valid"
-        @submit.prevent="createBoard"
-        @keydown.prevent.enter>
-          <v-card width="250" class="mx-1">
-            <v-card-title class="primary lighten-1 white--text align-end" >Create Board</v-card-title>
-            <v-container>
-              <v-text-field v-model= "board.name" :rules="notEmptyRules" label="Name" required></v-text-field>
-              <v-text-field v-model= "board.background" :rules="notEmptyRules" label="Background" required></v-text-field>
-            </v-container>
-            <v-card-actions>
-              <v-btn type="submit" :disabled="!valid" class="primary lighten-1 white--text align-end">
-                Create
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-form>
       </v-layout>
-    </v-slide-y-transition>
+        <v-flex pa-2 sm3 mx-auto>
+          <v-form 
+          v-if="!creating"
+          v-model="valid"
+          @submit.prevent="createBoard"
+          @keydown.prevent.enter>
+            <v-card>
+              <v-card-title class="primary lighten-1 white--text align-end" >Create Board</v-card-title>
+              <v-container>
+                <v-text-field v-model= "board.name" :rules="notEmptyRules" label="Name" required></v-text-field>
+                <v-text-field v-model= "board.background" :rules="notEmptyRules" label="Background" required></v-text-field>
+              </v-container>
+              <v-card-actions>
+                <v-btn type="submit" :disabled="!valid" class="primary lighten-1 white--text align-end">
+                  Create
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-form>
+        </v-flex>
   </v-container>
 </template>
 

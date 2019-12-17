@@ -1,12 +1,13 @@
 <template>
   <v-app>
     <v-app-bar class= "primary lighten-1 text-center" app>
-      <v-toolbar-title class="headline">
+      <v-toolbar-title>
         <v-btn class="mx-2" :to="{name:'boards'}" text color="white">Trello </v-btn>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn class="mx-1" v-if="showSignUp" :to="{name:'signup'}">SignUp</v-btn>
       <v-btn class="mx-1" v-if="showLogin" :to="{name:'login'}">Login</v-btn>
+      <v-btn class="mx-2" text color="white" v-if="user">{{user.user.displayName}}</v-btn>
       <v-avatar>
         <img v-if="user" :src="user.user.imageUrl">
       </v-avatar>
