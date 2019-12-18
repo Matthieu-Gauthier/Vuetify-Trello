@@ -80,37 +80,9 @@
         </v-layout>
       </v-flex>
         <v-flex sm2 pa-3 mx-auto>
-          <v-form
-          v-if="!creatingList && !boardsError"
-          v-model="validList"
-          @submit.prevent="createList"
-          @keydown.prevent.enter>
-            <v-card :color="list.color" mx-auto>
-              <v-card-title class="primary lighten-1 white--text align-end" >Create List</v-card-title>
-              <v-container>
-                <v-text-field v-model= "list.name" :rules="notEmptyRules" label="Name" required></v-text-field>
-                <v-expansion-panels popout>
-                  <v-expansion-panel>
-                    <v-expansion-panel-header>
-                      Color
-                      <v-row justify="end" class="ma-0">
-                        <v-avatar :color="list.color">
-                        </v-avatar>
-                      </v-row>
-                    </v-expansion-panel-header>
-                    <v-expansion-panel-content>
-                      <v-color-picker v-model="list.color" mode="hexa" canvas-height="100" hide-inputs></v-color-picker>
-                    </v-expansion-panel-content>
-                  </v-expansion-panel>
-                </v-expansion-panels>
-              </v-container>
-              <v-card-actions>
-                <v-btn type="submit" :disabled="!validList" class="primary lighten-1 white--text align-end">
-                  Create
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-form>
+          <create-list 
+            :createActivity = "createActivity">
+          </create-list>
         </v-flex>
   </v-container>
 </template>
@@ -120,10 +92,12 @@ import marked from 'marked';
 import { notEmptyRules } from '@/validators';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import CreateCard from '../components/CreateCard';
+import CreateList from '../components/CreateList';
 export default {
   name:'list',
   components: {
     CreateCard,
+    CreateList,
   },
   data: vm => ({
     droppingList: null,

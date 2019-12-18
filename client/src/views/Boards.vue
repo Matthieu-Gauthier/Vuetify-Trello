@@ -17,7 +17,7 @@
         </v-flex>
       </v-layout>
         <v-flex pa-2 sm3 mx-auto>
-          <v-form 
+          <!-- <v-form 
           v-if="!creating"
           v-model="valid"
           @submit.prevent="createBoard"
@@ -34,16 +34,24 @@
                 </v-btn>
               </v-card-actions>
             </v-card>
-          </v-form>
+          </v-form> -->
+          <create-board> </create-board>
         </v-flex>
   </v-container>
 </template>
 
+export default {
+  name:'list',
+
 <script>
 import { notEmptyRules } from '@/validators';
 import { mapActions, mapState, mapGetters } from 'vuex'
+import CreateBoard from '../components/CreateBoard';
 export default {
   name:'boards',
+  components: {
+      CreateBoard,
+  },
   data: vm => ({
     valid: false,
     board: {
