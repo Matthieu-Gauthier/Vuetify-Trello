@@ -1,10 +1,12 @@
 <template>
-  <v-container>
-      <v-layout row align-center wrap pa-2>  
-        <v-progress-circular v-if="loading" :size="70" :width="7" indeterminate color="primary"></v-progress-circular>
-        <v-flex class="pa-2" v-if="!loading" sm3 v-for="board in boards" :key="board._id">
-          <v-card class="column">
-            <v-img class="white--text align-end" max-height="250px" :src="board.background">
+  <v-container fluid>
+    <v-progress-circular v-if="loading" :size="70" :width="7" indeterminate color="primary"></v-progress-circular>
+    <v-row >
+      <v-col v-if="!loading" v-for="board in boards" :key="board._id"
+      xl=2 md=4 sm=6 xs=12 
+      >
+        <v-card>
+            <v-img class="white--text align-end" height="250px" :src="board.background">
               <v-card-title>{{board.name}}</v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
@@ -14,11 +16,12 @@
               </v-card-actions>
             </v-img>
           </v-card>
-        </v-flex>
-      </v-layout>
-        <v-flex pa-2 sm3 mx-auto>
+
+      </v-col>
+      <v-col xl=2 md=4 sm=6 xs=12 align-self=end>
           <create-board></create-board>
-        </v-flex>
+      </v-col >
+    </v-row>
   </v-container>
 </template>
 
