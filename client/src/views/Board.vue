@@ -147,27 +147,6 @@ export default {
     ...mapActions('lists', { findLists: 'find' }),
     ...mapActions('cards', { findCards: 'find' }),
     ...mapActions('activities', { findActivities: 'find' }),
-    async createList() {
-      if (this.validList) {
-        const { List, Activity } = this.$FeathersVuex.api;
-        this.list.boardId = this.$route.params.id;
-        const list = new List(this.list);
-        console.log(this.list)
-        await list.save()
-         .then((list) => {
-            this.list ={
-              name: '',
-              order: 0,
-              archived: false,
-              color:'#FF000000',
-            };
-            this.createActivity(`**${this.user.user.displayName}** created List **${list.name}**`)
-          })
-          .catch((err) => {
-            console.error(err)
-          })
-      }
-    },
     async createActivity(text) {
       const { Activity } = this.$FeathersVuex.api;
       const activity = new Activity();

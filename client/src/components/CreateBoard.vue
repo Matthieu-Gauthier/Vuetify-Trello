@@ -27,24 +27,7 @@
     </v-menu>
   </div>
 </template>
-// <v-form 
-// v-if="!creating"
-// v-model="valid"
-// @submit.prevent="createBoard"
-// @keydown.prevent.enter>
-// <v-card>
-//     <v-card-title class="primary lighten-1 white--text align-end" >Create Board</v-card-title>
-//     <v-container>
-//     <v-text-field v-model= "board.name" :rules="notEmptyRules" label="Name" required></v-text-field>
-//     <v-text-field v-model= "board.background" :rules="notEmptyRules" label="Background" required></v-text-field>
-//     </v-container>
-//     <v-card-actions>
-//     <v-btn type="submit" :disabled="!valid" class="primary lighten-1 white--text align-end">
-//         Create
-//     </v-btn>
-//     </v-card-actions>
-// </v-card>
-// </v-form>
+
 <script>
 import { notEmptyRules } from '@/validators';
 import { mapActions, mapState, mapGetters } from 'vuex'
