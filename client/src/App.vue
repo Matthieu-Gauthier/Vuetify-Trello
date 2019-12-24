@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app> 
     <v-app-bar class= "primary lighten-1 text-center" app>
       <v-toolbar-title>
         <v-btn class="mx-2" :to="{name:'boards'}" text color="white">Trello </v-btn>

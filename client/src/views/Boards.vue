@@ -16,7 +16,6 @@
               </v-card-actions>
             </v-img>
           </v-card>
-
       </v-col>
       <v-col xl=2 md=4 sm=6 xs=12 align-self=end>
           <create-board></create-board>
@@ -24,9 +23,6 @@
     </v-row>
   </v-container>
 </template>
-
-export default {
-  name:'list',
 
 <script>
 import { notEmptyRules } from '@/validators';
