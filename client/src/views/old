@@ -1,0 +1,84 @@
+ <v-progress-circular
+        v-if="loadingBoard || loadingLists"
+        :size="70"
+        :width="7"
+        indeterminate
+        color="primary">
+      </v-progress-circular>
+      <v-flex xs10 pa-3 v-if="boardsError">
+        <v-alert  type="error">
+          {{boardsError.message}}
+        </v-alert>
+      </v-flex>
+      <v-flex xs10 pa-3 v-if="!boardsError">
+        <v-layout row wrap>
+          <v-flex xs12>
+            <h2 v-if="board">{{board.name}}</h2>
+          </v-flex>
+          <v-flex sm2 v-for="list in lists" :key="list._id" pa-1>
+            <v-layout row wrap>
+              <v-flex>
+                <v-card :color="list.color" @dragover="setDroppingList($event, list)" :class="{ 'teal lighten-4': droppingList == list }" v-if="!boardsError">
+                  <v-card-title>
+                    <v-layout column>
+                      <v-flex>
+                        <div class="headline">{{list.name}}</div>
+                      </v-flex>
+                      <v-flex pa-1
+                        v-if= cardsByListId[list._id]
+                        v-for="card in cardsByListId[list._id]" 
+                        :key="card._id">
+                        <v-card draggable="true" @dragstart="startDraggingCard(card)" @dragend="dropCard()">
+                          <v-container fluid grid-list-lg>
+                            <v-layout row>
+                              <v-flex xs12>
+                                <div>
+                                  <div class="headline">{{card.title}}</div>
+                                </div>
+                              </v-flex>
+                            </v-layout>
+                          </v-container>
+                        </v-card>
+                      </v-flex>
+                    </v-layout>
+                  </v-card-title>
+                  <v-card-actions>
+                    <create-card 
+                      :createActivity = "createActivity"
+                      :list= "list" 
+                      :boardId= "$route.params.id">
+                    </create-card>
+                  </v-card-actions>
+                </v-card>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+          <v-flex xs2 >
+             <v-navigation-drawer
+              fixed
+              clipped
+              absolute
+              color: secondary
+              v-if="ShowActivities"
+              right>
+              <v-card heigth="100%" flat>
+                <v-list three-line>
+                  <v-list-item v-for="activity in activitiesByDate" :key="activity._id">
+                    <v-list-item-icon>
+                      <v-icon color="primary">mdi-ticket</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-sub-title v-html="markModify(activity.text)"></v-list-item-sub-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-card>
+            </v-navigation-drawer>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+        <v-flex sm2 pa-3 mx-auto>
+          <create-list 
+            :createActivity = "createActivity">
+          </create-list>
+        </v-flex>

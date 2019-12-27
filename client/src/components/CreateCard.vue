@@ -1,38 +1,36 @@
+
 <template>
-  <v-container fluid>
-    <v-layout row wrap>
-      <v-flex xs12>
-        <v-form
-        v-if="!creatingCard"
-        v-model="validCard"
-        @submit.prevent="createCard"
-        @keydown.prevent.enter>
-          <v-card>
-            <v-container>
-              <v-text-field v-model= "card.title" :rules="notEmptyRules" label="Title card" required></v-text-field>
-            </v-container>
-            <v-card-actions>
-              <v-btn type="submit" :disabled="!validCard" class="primary lighten-1 white--text align-end">
-                Create Card
-              </v-btn>
-            </v-card-actions>
-          </v-card>
+  <v-row class="fill-height" align-content="start">
+    <v-col>
+      <v-card
+        v-if="!($store.state.activeListCreateCard === this.list._id)"
+        @click.stop="activateCardMode"
+        @mouseenter="cardHover = true"
+        @mouseleave="cardHover = false"
+      >Add a card ...</v-card>
+
+      <v-card @click.stop v-else>
+        <v-form ref="form" v-model="validCard" @submit.prevent="createCard()">
+          <v-text-field
+            ref="newCardContent"
+            v-model="card.title"
+            :rules="notEmptyRules"
+            required
+            autofocus
+            color="primary"
+            append-icon="mdi-content-save"
+            @click:append="createCard()"
+          />
         </v-form>
-      </v-flex>
-      <v-progress-circular align-center
-        v-if="creatingCard"
-        :size="70"
-        :width="7"
-        indeterminate
-        color="primary">
-      </v-progress-circular>
-    </v-layout>
-  </v-container>
+      </v-card>
+    </v-col>
+  </v-row>
 </template>
+
 
 <script>
 import { notEmptyRules } from '@/validators';
-import { mapActions, mapState, mapGetters } from 'vuex'
+import { mapActions} from 'vuex'
 
 export default {
   name:'create-card',
@@ -40,14 +38,21 @@ export default {
   data: () => ({
     creatingCard: false,
     validCard: false,
+    cardHover: true,
     board: {},
     card: {
       title: '',
-      members: [],
     },
     notEmptyRules,
   }),
   methods: {
+    ...mapActions(['setActiveListCreateCard']),
+    activateCardMode() {
+      // eslint-disable-next-line
+      this.setActiveListCreateCard(this.list._id);
+      this.$emit('deactivateCreateMode');
+      this.cardHover = false;
+    },
     async createCard() {
       if (this.validCard) {
         const { Card, Activity } = this.$FeathersVuex.api;

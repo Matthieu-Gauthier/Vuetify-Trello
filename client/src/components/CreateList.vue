@@ -1,29 +1,54 @@
 <template>
-  <div class="text-center">
-    <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="200" offset-y bottom>
-      <template v-slot:activator="{ on }">
-        <v-btn color="primary" dark v-on="on">
-          Add new list
-        </v-btn>
-      </template>
-        <v-form 
-        v-if="!creatingList && !boardsError"
-        v-model="validList"
-        @submit.prevent="createList"
-        @keydown.prevent.enter>
-            <v-card :color="list.color" mx-auto>
-               <v-container>
-                 <v-text-field v-model= "list.name" :rules="notEmptyRules" label="Name" required></v-text-field>
-                </v-container>
-                <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="primary" text @click="menu = false">Cancel</v-btn>
-                <v-btn type="submit" :disabled="!validList" color="primary" text @click="menu = false">Save</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-form>
-    </v-menu>
-  </div>
+  <v-container fluid fill-height>
+    <v-row>
+      <v-col>
+        <v-card
+          class="transparent"
+          v-if="!createMode"
+          @click.stop="$emit('activateCreateMode')"
+          @mouseenter="cardHover = true"
+          @mouseleave="cardHover = false"
+          color="primary white--text"
+        >
+          <span class="headline">Add a list...</span>
+        </v-card>
+        <v-card v-else @click.stop="$emit('activateCreateMode')">
+          <v-form
+            ref="form"
+            v-model="valid"
+            @submit.prevent="createList"
+            @keydown.prevent.enter
+          >
+            <v-card-title>
+              <v-container pa-0>
+                <v-layout column>
+                  <v-flex>
+                    <v-text-field
+                      ref="listname"
+                      v-model="list.name"
+                      :rules="[notEmptyRules]"
+                      label="Name"
+                      required
+                      autofocus
+                    ></v-text-field>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card-title>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="success"
+                type="submit"
+                :loading="creating"
+                :disabled="!valid || creating"
+              >Create</v-btn>
+            </v-card-actions>
+          </v-form>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>

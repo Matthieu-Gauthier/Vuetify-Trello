@@ -7,7 +7,7 @@ import feathersVuex from 'feathers-vuex' // or '@/libs/feathers-vuex' if you're 
 
 // Setup the Feathers client
 //const host = process.env.VUE_APP_API_URL // or set a string here, directly
-const host = "http://localhost:3030"
+const host = "http://192.168.100.128:3030"
 const socket = io(host, { transports: ['websocket'] })
 const feathersClient = feathers()
   .configure(socketio(socket))

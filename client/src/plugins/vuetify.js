@@ -23,5 +23,5 @@ export default new Vuetify({
         error: '#b71c1c',
       },
     }
-  }
+  },
 });
