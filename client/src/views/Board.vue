@@ -51,7 +51,10 @@
         </v-card>
       </v-col>
       <v-col align-self="start" cols="12" xl="2" lg="2" md="6" sm="12" xs="12">
-        <create-list></create-list>
+        <create-list
+          :createMode="createMode"
+          v-on:activateCreateMode="createMode = true"
+        ></create-list>
       </v-col>
     </v-row>
   </v-container>
@@ -80,6 +83,7 @@ export default {
     validList: false,
     ShowActivities: true,
     board: {},
+    createMode: false,
     list: {
       name: '',
       order: 0,

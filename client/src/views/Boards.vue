@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <loading-bar v-if="loading"></loading-bar>
-    <v-row align="start" justify="start">
+    <v-row class="fill-height" align="start" justify="start">
       <v-col
         xl="2"
         lg="2"
@@ -15,7 +15,8 @@
         <v-card class="column">
           <v-img
             class="white--text align-end"
-            max-height="250px"
+            min-height="200px"
+            max-height="200px"
             :src="board.background"
           >
             <v-card-title>{{board.name}}</v-card-title>

@@ -1,7 +1,7 @@
 <template>
   <v-container fluid fill-height>
     <v-row>
-      <v-col>
+      <v-col cols="12">
         <v-card
           class="transparent"
           v-if="!createMode"
@@ -15,7 +15,7 @@
         <v-card v-else @click.stop="$emit('activateCreateMode')">
           <v-form
             ref="form"
-            v-model="valid"
+            v-model="validList"
             @submit.prevent="createList"
             @keydown.prevent.enter
           >
@@ -26,7 +26,7 @@
                     <v-text-field
                       ref="listname"
                       v-model="list.name"
-                      :rules="[notEmptyRules]"
+                      :rules="notEmptyRules"
                       label="Name"
                       required
                       autofocus
@@ -37,12 +37,7 @@
             </v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn
-                color="success"
-                type="submit"
-                :loading="creating"
-                :disabled="!valid || creating"
-              >Create</v-btn>
+              <v-btn color="primary" type="submit" :disabled="!validList">Create</v-btn>
             </v-card-actions>
           </v-form>
         </v-card>
@@ -57,7 +52,7 @@ import { mapActions, mapState, mapGetters } from 'vuex';
 
 export default {
   name:'create-list',
-  props: ['createActivity'],
+  props: ['createMode','createActivity'],
   data: vm => ({
     menu: false,
     validList: false,
