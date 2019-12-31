@@ -82,3 +82,21 @@
             :createActivity = "createActivity">
           </create-list>
         </v-flex>
+
+
+        // <template>
+//   <div class="text-center">
+//     <v-menu
+//       v-model="menu"
+//       :close-on-content-click="false"
+//       :nudge-width="200"
+//       offset-y
+//       bottom
+//     >
+//       <template v-slot:activator="{ on }">
+//         <v-btn color="primary" dark v-on="on">Add new board</v-btn>
+//       </template>
+
+//     </v-menu>
+//   </div>
+// </template>

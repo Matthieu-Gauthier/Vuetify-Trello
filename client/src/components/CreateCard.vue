@@ -5,8 +5,6 @@
       <v-card
         v-if="!($store.state.activeListCreateCard === this.list._id)"
         @click.stop="activateCardMode"
-        @mouseenter="cardHover = true"
-        @mouseleave="cardHover = false"
       >Add a card ...</v-card>
 
       <v-card @click.stop v-else>
@@ -38,7 +36,6 @@ export default {
   data: () => ({
     creatingCard: false,
     validCard: false,
-    cardHover: true,
     board: {},
     card: {
       title: '',
@@ -48,7 +45,6 @@ export default {
   methods: {
     ...mapActions(['setActiveListCreateCard']),
     activateCardMode() {
-      // eslint-disable-next-line
       this.setActiveListCreateCard(this.list._id);
       this.$emit('deactivateCreateMode');
       this.cardHover = false;
@@ -61,7 +57,7 @@ export default {
         const card = new Card(this.card);
         this.creatingCard = true;
         await card.save()
-         .then((card) => {
+         .then( () => {
             setTimeout(() => {
               this.creatingCard = false;
             }, 1000);
@@ -70,9 +66,6 @@ export default {
               title: '',
               members: [],
             };
-          })
-          .catch((err) => {
-            console.error(err)
           })
       }
     },

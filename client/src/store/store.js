@@ -19,6 +19,7 @@ const servicePlugins = requireModule
 export default new Vuex.Store({
   state: {
     activeListCreateCard: '',
+    ShowActivities: true,
   },
   getters: {},
   mutations: {
@@ -26,10 +27,17 @@ export default new Vuex.Store({
       const currentState = state;
       currentState.activeListCreateCard = listId;
     },
+    CHANGE_SHOW_ACTIVITIES(state) {
+      const currentState = state;
+      currentState.ShowActivities = !currentState.ShowActivities
+    }
   },
   actions: {
     setActiveListCreateCard(context, listId) {
       context.commit('SET_ACTIVE_LIST_CREATE_CARD', listId);
+    },
+    setShowActivities(context) {
+      context.commit('CHANGE_SHOW_ACTIVITIES');
     },
   },
   plugins: [

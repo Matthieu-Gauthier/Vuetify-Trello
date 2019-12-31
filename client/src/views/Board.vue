@@ -1,60 +1,91 @@
 <template>
   <v-container
-    fill-height
+    class="fill-height align-start justify-center"
     fluid
     :style="'background-image: url('+board.background+'); background-size:cover;'"
+    @click="createMode = false"
   >
     <loading-bar v-if="loadingBoard || loadingLists"></loading-bar>
-    <v-row class="fill-height" align-content="start">
-      <v-col
-        cols="12"
-        xl="2"
-        lg="2"
-        md="6"
-        sm="12"
-        xs="12"
-        v-for="list in lists"
-        :key="list._id"
-      >
-        <v-card
-          class="transparent"
-          color="primary"
-          @dragover="setDroppingList($event, list)"
-          :class="{ 'teal lighten-4': droppingList == list }"
-          v-if="!boardsError"
-        >
-          <v-card-title class="white--text">{{list.name}}</v-card-title>
-          <v-container>
-            <v-row align-content="start">
-              <v-col>
-                <v-card
-                  class="ma-1"
-                  v-if="cardsByListId[list._id]"
-                  v-for="card in cardsByListId[list._id]"
-                  :key="card._id"
-                  draggable="true"
-                  @dragstart="startDraggingCard(card)"
-                  @dragend="dropCard()"
-                >
-                  <div class="headline">{{card.title}}</div>
-                </v-card>
-                <v-card-actions>
-                  <create-card
-                    :createActivity="createActivity"
-                    :list="list"
-                    :boardId="$route.params.id"
-                  ></create-card>
-                </v-card-actions>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
+    <v-row>
+      <v-col>
+        <v-row>
+          <v-col
+            cols="12"
+            xl="2"
+            lg="2"
+            md="6"
+            sm="12"
+            xs="12"
+            v-for="list in lists"
+            :key="list._id"
+          >
+            <v-card
+              class="transparent"
+              color="primary"
+              @dragover="setDroppingList($event, list)"
+              :class="{ 'teal lighten-4': droppingList == list }"
+              v-if="!boardsError"
+            >
+              <v-card-title class="white--text">{{list.name}}</v-card-title>
+              <v-container>
+                <v-row align-content="start">
+                  <v-col>
+                    <v-card
+                      class="ma-1"
+                      v-if="cardsByListId[list._id]"
+                      v-for="card in cardsByListId[list._id]"
+                      :key="card._id"
+                      draggable="true"
+                      @dragstart="startDraggingCard(card)"
+                      @dragend="dropCard()"
+                    >
+                      <div class="headline">{{card.title}}</div>
+                    </v-card>
+                    <v-card-actions>
+                      <create-card
+                        :createActivity="createActivity"
+                        :list="list"
+                        :boardId="$route.params.id"
+                      ></create-card>
+                    </v-card-actions>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card>
+          </v-col>
+          <v-col
+            align-self="start"
+            cols="12"
+            xl="2"
+            lg="2"
+            md="6"
+            sm="12"
+            xs="12"
+          >
+            <create-list
+              :createMode="createMode"
+              :createActivity="createActivity"
+              v-on:activateCreateMode="createMode = true"
+            ></create-list>
+          </v-col>
+        </v-row>
       </v-col>
-      <v-col align-self="start" cols="12" xl="2" lg="2" md="6" sm="12" xs="12">
-        <create-list
-          :createMode="createMode"
-          v-on:activateCreateMode="createMode = true"
-        ></create-list>
+      <v-col class="transparent" v-if="$store.state.ShowActivities" cols="2">
+        <v-card heigth="100%" flat>
+          <v-list three-line>
+            <v-list-item
+              v-for="activity in activitiesByDate"
+              :key="activity._id"
+            >
+              <v-list-item-icon>
+                <v-icon color="primary">mdi-ticket</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <div v-html="markModify(activity.text)"></div>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -63,6 +94,7 @@
 
 
 <script>
+import store from "../store/store";
 import marked from 'marked';
 import { notEmptyRules } from '@/validators';
 import { mapActions, mapState, mapGetters } from 'vuex';
@@ -71,17 +103,17 @@ import CreateList from '../components/CreateList';
 import LoadingBar from '../components/LoadingBar';
 export default {
   name:'list',
+  store,
   components: {
     CreateCard,
     CreateList,
     LoadingBar,
   },
-  data: vm => ({
+  data: () => ({
     droppingList: null,
     loadingTest:true,
     draggingCard: null,
     validList: false,
-    ShowActivities: true,
     board: {},
     createMode: false,
     list: {
@@ -96,7 +128,6 @@ export default {
     const idBoard = this.$route.params.id //Obliger de passer par la car cela me disait que la variable this.$route.params.id est undefined
     this.getBoard(idBoard)
       .then(Response => {
-        console.log(Response);
         this.board = Response.data || Response;
       });
     this.findLists({
@@ -104,7 +135,7 @@ export default {
         boardId: idBoard,
       }
     }).then(Response => {
-      const lists = Response.data || Response;
+       const lists = Response.data || Response;
     });
     this.findCards({
       query: {
@@ -128,10 +159,9 @@ export default {
     ...mapActions('activities', { findActivities: 'find' }),
     async createList() {
       if (this.validList) {
-        const { List, Activity } = this.$FeathersVuex.api;
+        const { List } = this.$FeathersVuex.api;
         this.list.boardId = this.$route.params.id;
         const list = new List(this.list);
-        console.log(this.list)
         await list.save()
          .then((list) => {
             this.list ={
@@ -141,9 +171,6 @@ export default {
               color:'#FF000000',
             };
             this.createActivity(`**${this.user.user.displayName}** created List **${list.name}**`)
-          })
-          .catch((err) => {
-            console.error(err)
           })
       }
     },
@@ -237,6 +264,10 @@ export default {
 <style scoped>
 .transparent {
   background-color: #009688 !important;
+  opacity: 0.65;
+  border-color: transparent !important;
+}
+.transparentbis {
   opacity: 0.65;
   border-color: transparent !important;
 }

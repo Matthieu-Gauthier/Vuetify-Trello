@@ -6,6 +6,7 @@ import SignUp from './views/SignUp.vue';
 import Login from './views/Login.vue';
 import Boards from './views/Boards.vue';
 import Board from './views/Board.vue';
+import About from './views/About.vue';
 
 Vue.use(Router);
 
@@ -24,6 +25,11 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: About
     },
     {
       path: '/',
@@ -48,15 +54,5 @@ export default new Router({
       component: Board,
       beforeEnter: isLoggedIn
     },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: function () { 
-        return import(/* webpackChunkName: "about" */ './views/About.vue')
-      }
-    }
   ]
 })

@@ -1,59 +1,52 @@
 <template>
-  <div class="text-center">
-    <v-menu
-      v-model="menu"
-      :close-on-content-click="false"
-      :nudge-width="200"
-      offset-y
-      bottom
+  <v-card
+    class="transparent"
+    v-if="!createMode"
+    @click.stop="$emit('activateCreateMode')"
+    color="primary white--text"
+  >
+    <span class="headline">Add a card...</span>
+  </v-card>
+  <v-card
+    min-height="200px"
+    max-height="200px"
+    v-else
+    @click.stop="$emit('activateCreateMode')"
+  >
+    <v-form
+      v-if="!creating"
+      v-model="valid"
+      @submit.prevent="createBoard"
+      @keydown.prevent.enter
     >
-      <template v-slot:activator="{ on }">
-        <v-btn color="primary" dark v-on="on">Add new board</v-btn>
-      </template>
-      <v-form
-        v-if="!creating"
-        v-model="valid"
-        @submit.prevent="createBoard"
-        @keydown.prevent.enter
-      >
-        <v-card>
-          <v-container>
-            <v-text-field
-              v-model="board.name"
-              :rules="notEmptyRules"
-              label="Name"
-              required
-            ></v-text-field>
-            <v-text-field
-              v-model="board.background"
-              :rules="notEmptyRules"
-              label="Background"
-              required
-            ></v-text-field>
-          </v-container>
+      <v-container>
+        <v-text-field
+          v-model="board.name"
+          :rules="notEmptyRules"
+          label="Name"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="board.background"
+          :rules="notEmptyRules"
+          label="Background"
+          required
+        ></v-text-field>
 
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="menu = false">Cancel</v-btn>
-            <v-btn
-              type="submit"
-              :disabled="!valid"
-              color="primary"
-              text
-              @click="menu = false"
-            >Save</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-form>
-    </v-menu>
-  </div>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn type="submit" :disabled="!valid" color="primary" text>Save</v-btn>
+        </v-card-actions>
+      </v-container>
+    </v-form>
+  </v-card>
 </template>
-
 <script>
 import { notEmptyRules } from '@/validators';
-import { mapActions, mapState, mapGetters } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 export default {
     name:'create-board',
+    props:['createMode'],
     data: vm => ({
         menu: false,
         valid: false,
@@ -69,7 +62,6 @@ export default {
         if (this.valid) {
             const { Board } = this.$FeathersVuex.api;
             const board = new Board(this.board);
-            console.log(this.board)
             board.save()
             .then((board) => {
                 this.board ={

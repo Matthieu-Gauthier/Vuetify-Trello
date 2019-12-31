@@ -1,18 +1,18 @@
 <template>
-  <v-container fluid>
+  <v-container fluid @click="createMode = false">
     <loading-bar v-if="loading"></loading-bar>
-    <v-row class="fill-height" align="start" justify="start">
+    <v-row v-if="!loading" align="start" justify="start">
       <v-col
+        cols="12"
         xl="2"
         lg="2"
         md="6"
         sm="12"
         xs="12"
-        v-if="!loading"
         v-for="board in boards"
         :key="board._id"
       >
-        <v-card class="column">
+        <v-card>
           <v-img
             class="white--text align-end"
             min-height="200px"
@@ -31,8 +31,12 @@
           </v-img>
         </v-card>
       </v-col>
-      <v-col align-self="end" xl="2" lg="2" md="6" sm="12" xs="12">
-        <create-board></create-board>
+      <v-col align-self="start" cols="12" xl="2" lg="2" md="6" sm="12" xs="12">
+        <create-board
+          :createMode="createMode"
+          v-on:activateCreateMode="createMode = true"
+          v-on:desactivateCreateMode="createMode = false"
+        ></create-board>
       </v-col>
     </v-row>
   </v-container>
@@ -50,8 +54,9 @@ export default {
       CreateBoard,
       LoadingBar,
   },
-  data: vm => ({
+  data: () => ({
     valid: false,
+    createMode:false,
     board: {
       name: '',
       background: '',
@@ -60,28 +65,24 @@ export default {
     notEmptyRules,
   }),
   mounted() {
-    this.findBoards({ query: {} })
-      .then(Response => {
-        const boards = Response.data || Response;
-      })
-  },
+     this.findBoards()
+       .then(Response => {
+         const boards = Response.data || Response;
+       })
+   },
   methods: {
     ...mapActions('boards', { findBoards: 'find' }),
     createBoard() {
       if (this.valid) {
         const { Board } = this.$FeathersVuex.api;
         const board = new Board(this.board);
-        console.log(this.board)
         board.save()
-         .then((board) => {
+         .then( ()=> {
             this.board ={
               name: '',
               background: '',
               memberIds: [],
             };
-          })
-          .catch((err) => {
-            console.error(err)
           })
       }
     },
@@ -93,11 +94,8 @@ export default {
       creating: 'isCreatePending',
       }),
     ...mapGetters('boards', { findBoardsInStore: 'find'}),
-    boards () {
-      return this.findBoardsInStore({
-        query:{
-          ownerId: this.user.user._id,
-        } }).data;
+    boards() {
+      return this.findBoardsInStore().data;
     }
   }
 };

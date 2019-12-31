@@ -8,6 +8,22 @@
       <v-btn class="mx-1" v-if="showSignUp" :to="{name:'signup'}">SignUp</v-btn>
       <v-btn class="mx-1" v-if="showLogin" :to="{name:'login'}">Login</v-btn>
       <v-btn
+        v-if="$store.state.ShowActivities && ($route.name=='board')"
+        text
+        color="white"
+        @click="changeShowActivities"
+      >
+        <v-icon>mdi-eye-off</v-icon>
+      </v-btn>
+      <v-btn
+        @click="changeShowActivities"
+        v-if="!$store.state.ShowActivities && ($route.name=='board')"
+        text
+        color="white"
+      >
+        <v-icon>mdi-eye</v-icon>
+      </v-btn>
+      <v-btn
         class="mx-2"
         text
         color="white"
@@ -39,8 +55,7 @@
 </template>
 
 <script>
-import store from "./store/store";
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 function ifLogin(store, data) {
   store
@@ -66,15 +81,18 @@ export default {
   data: vm => ({
     showLogin: false,
     showSignUp: false,
-    showLogout: true
+    showLogout: true,
   }),
   updated() {
     ifLogin(this.$store, this.$data);
-    console.log(this.$store);
   },
   methods: {
     ...mapActions("auth", { authLogout: "logout" }),
     ...mapActions("auth", { authenticate: "authenticate" }),
+    ...mapActions(['setShowActivities']),
+    changeShowActivities() {
+      this.setShowActivities()
+    },
     logout() {
       this.authLogout()
         .then(() => {
@@ -83,10 +101,6 @@ export default {
           this.$data.showLogout = false;
           this.$router.push("/login");
         })
-        .catch(e => {
-          // Show login page (potentially with `e.message`)
-          console.error("Logout error", e);
-        });
     }
   }
 };

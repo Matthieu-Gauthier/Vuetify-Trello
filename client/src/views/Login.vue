@@ -1,10 +1,11 @@
 <template>
-  <v-container>
-    <v-slide-y-transition class="center" mode="out-in">
-      <v-layout column align-center>
+  <v-container fluid>
+    <loading-bar v-if="loading"></loading-bar>
+    <v-row>
+      <v-col align="center">
         <v-card
           v-if="!loading"
-          max-width="500"
+          max-width="400"
           max-height="500"
           min-width="300"
           min-height="300"
@@ -47,15 +48,8 @@
             dismissible
           >"Please input correct username and password !"</v-alert>
         </v-card>
-        <v-progress-circular
-          v-if="loading"
-          :size="70"
-          :width="7"
-          indeterminate
-          color="primary"
-        ></v-progress-circular>
-      </v-layout>
-    </v-slide-y-transition>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
