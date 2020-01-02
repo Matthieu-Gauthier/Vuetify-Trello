@@ -12,20 +12,29 @@
         v-for="board in boards"
         :key="board._id"
       >
-        <v-card>
-          <v-img
-            class="white--text align-end"
-            min-height="200px"
-            max-height="200px"
-            :src="board.background"
-          >
-            <v-card-title>{{board.name}}</v-card-title>
-            <v-card-actions>
+        <v-card class="white--text">
+          <v-img min-height="200px" max-height="200px" :src="board.background">
+            <v-card-title>
+              {{board.name}}
               <v-spacer></v-spacer>
-              <v-btn :to="{ name: 'board', params: { id: board._id } }" icon>
-                <v-icon
-                  class="white--text align-end"
-                >mdi-arrow-right-bold-circle</v-icon>
+              <v-menu bottom left>
+                <template v-slot:activator="{ on }">
+                  <v-btn class="white--text" icon v-on="on">
+                    <v-icon>mdi-dots-vertical</v-icon>
+                  </v-btn>
+                </template>
+
+                <v-list>
+                  <v-list-item @click.stop="deleteBoard(board)">
+                    <v-list-item-title>Delete Board</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-card-title>
+            <v-card-actions class="fill-height">
+              <v-spacer></v-spacer>
+              <v-btn class="white--text" :to="{ name: 'board', params: { id: board._id } }" icon>
+                <v-icon>mdi-arrow-right-bold-circle</v-icon>
               </v-btn>
             </v-card-actions>
           </v-img>
@@ -43,57 +52,64 @@
 </template>
 
 <script>
-import { notEmptyRules } from '@/validators';
-import { mapActions, mapState, mapGetters } from 'vuex'
-import CreateBoard from '../components/CreateBoard';
-import LoadingBar from '../components/LoadingBar';
+import { notEmptyRules } from "@/validators";
+import { mapActions, mapState, mapGetters } from "vuex";
+import CreateBoard from "../components/CreateBoard";
+import LoadingBar from "../components/LoadingBar";
 
 export default {
-  name:'boards',
+  name: "boards",
   components: {
-      CreateBoard,
-      LoadingBar,
+    CreateBoard,
+    LoadingBar
   },
   data: () => ({
     valid: false,
-    createMode:false,
+    createMode: false,
     board: {
-      name: '',
-      background: '',
-      memberIds: [],
+      name: "",
+      background: "",
+      memberIds: []
     },
-    notEmptyRules,
+    notEmptyRules
   }),
   mounted() {
-     this.findBoards()
-       .then(Response => {
-         const boards = Response.data || Response;
-       })
-   },
+    this.findBoards().then(Response => {
+      const boards = Response.data || Response;
+    });
+    this.changeBackground();
+  },
   methods: {
-    ...mapActions('boards', { findBoards: 'find' }),
+    ...mapActions(["setBackground"]),
+    changeBackground() {
+      this.setBackground("");
+    },
+    ...mapActions("boards", { findBoards: "find" }),
     createBoard() {
       if (this.valid) {
         const { Board } = this.$FeathersVuex.api;
         const board = new Board(this.board);
-        board.save()
-         .then( ()=> {
-            this.board ={
-              name: '',
-              background: '',
-              memberIds: [],
-            };
-          })
+        board.save().then(() => {
+          this.board = {
+            name: "",
+            background: "",
+            memberIds: []
+          };
+        });
       }
     },
+    deleteBoard(board) {
+      console.log(board);
+      board.remove();
+    }
   },
   computed: {
-    ...mapState('auth', { user: 'payload' }),
-    ...mapState('boards', {
-      loading: 'isFindPending',
-      creating: 'isCreatePending',
-      }),
-    ...mapGetters('boards', { findBoardsInStore: 'find'}),
+    ...mapState("auth", { user: "payload" }),
+    ...mapState("boards", {
+      loading: "isFindPending",
+      creating: "isCreatePending"
+    }),
+    ...mapGetters("boards", { findBoardsInStore: "find" }),
     boards() {
       return this.findBoardsInStore().data;
     }

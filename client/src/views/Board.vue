@@ -1,10 +1,5 @@
 <template>
-  <v-container
-    class="fill-height align-start justify-center"
-    fluid
-    :style="'background-image: url('+board.background+'); background-size:cover;'"
-    @click="createMode = false"
-  >
+  <v-container class="fill-height align-start justify-center" fluid @click="createMode = false">
     <loading-bar v-if="loadingBoard || loadingLists"></loading-bar>
     <v-row>
       <v-col>
@@ -53,15 +48,7 @@
               </v-container>
             </v-card>
           </v-col>
-          <v-col
-            align-self="start"
-            cols="12"
-            xl="2"
-            lg="2"
-            md="6"
-            sm="12"
-            xs="12"
-          >
+          <v-col align-self="start" cols="12" xl="2" lg="2" md="6" sm="12" xs="12">
             <create-list
               :createMode="createMode"
               :createActivity="createActivity"
@@ -71,12 +58,9 @@
         </v-row>
       </v-col>
       <v-col class="transparent" v-if="$store.state.ShowActivities" cols="2">
-        <v-card heigth="100%" flat>
+        <v-card heigth="100%">
           <v-list three-line>
-            <v-list-item
-              v-for="activity in activitiesByDate"
-              :key="activity._id"
-            >
+            <v-list-item v-for="activity in activitiesByDate" :key="activity._id">
               <v-list-item-icon>
                 <v-icon color="primary">mdi-ticket</v-icon>
               </v-list-item-icon>
@@ -95,83 +79,89 @@
 
 <script>
 import store from "../store/store";
-import marked from 'marked';
-import { notEmptyRules } from '@/validators';
-import { mapActions, mapState, mapGetters } from 'vuex';
-import CreateCard from '../components/CreateCard';
-import CreateList from '../components/CreateList';
-import LoadingBar from '../components/LoadingBar';
+import marked from "marked";
+import { notEmptyRules } from "@/validators";
+import { mapActions, mapState, mapGetters } from "vuex";
+import CreateCard from "../components/CreateCard";
+import CreateList from "../components/CreateList";
+import LoadingBar from "../components/LoadingBar";
 export default {
-  name:'list',
+  name: "list",
   store,
   components: {
     CreateCard,
     CreateList,
-    LoadingBar,
+    LoadingBar
   },
   data: () => ({
     droppingList: null,
-    loadingTest:true,
+    loadingTest: true,
     draggingCard: null,
     validList: false,
     board: {},
     createMode: false,
     list: {
-      name: '',
+      name: "",
       order: 0,
       archived: false,
-      color:'#FF000000',
+      color: "#FF000000"
     },
-    notEmptyRules,
+    notEmptyRules
   }),
   mounted() {
-    const idBoard = this.$route.params.id //Obliger de passer par la car cela me disait que la variable this.$route.params.id est undefined
-    this.getBoard(idBoard)
-      .then(Response => {
-        this.board = Response.data || Response;
-      });
+    const idBoard = this.$route.params.id; //Obliger de passer par la car cela me disait que la variable this.$route.params.id est undefined
+    this.getBoard(idBoard).then(Response => {
+      this.board = Response.data || Response;
+      this.changeBackground();
+    });
+
     this.findLists({
       query: {
-        boardId: idBoard,
+        boardId: idBoard
       }
     }).then(Response => {
-       const lists = Response.data || Response;
+      const lists = Response.data || Response;
     });
     this.findCards({
       query: {
-        boardId: idBoard,
+        boardId: idBoard
       }
     }).then(Response => {
       const cards = Response.data || Response;
-    })
-      this.findActivities({
+    });
+    this.findActivities({
       query: {
-        boardId: idBoard,
+        boardId: idBoard
       }
     }).then(Response => {
       const activities = Response.data || Response;
     });
   },
   methods: {
-    ...mapActions('boards', { getBoard: 'get' }),
-    ...mapActions('lists', { findLists: 'find' }),
-    ...mapActions('cards', { findCards: 'find' }),
-    ...mapActions('activities', { findActivities: 'find' }),
+    ...mapActions(["setBackground"]),
+    changeBackground() {
+      this.setBackground(this.board.background);
+    },
+    ...mapActions("boards", { getBoard: "get" }),
+    ...mapActions("lists", { findLists: "find" }),
+    ...mapActions("cards", { findCards: "find" }),
+    ...mapActions("activities", { findActivities: "find" }),
     async createList() {
       if (this.validList) {
         const { List } = this.$FeathersVuex.api;
         this.list.boardId = this.$route.params.id;
         const list = new List(this.list);
-        await list.save()
-         .then((list) => {
-            this.list ={
-              name: '',
-              order: 0,
-              archived: false,
-              color:'#FF000000',
-            };
-            this.createActivity(`**${this.user.user.displayName}** created List **${list.name}**`)
-          })
+        await list.save().then(list => {
+          this.list = {
+            name: "",
+            order: 0,
+            archived: false,
+            color: "#FF000000"
+          };
+          this.createActivity(
+            `**${this.user.user.displayName}** created List **${list.name}**`
+          );
+        });
       }
     },
     async createActivity(text) {
@@ -183,82 +173,84 @@ export default {
       await activity.save();
     },
     startDraggingCard(card) {
-      this.draggingCard = card
+      this.draggingCard = card;
     },
     setDroppingList(event, list) {
-      this.droppingList = list
+      this.droppingList = list;
       event.preventDefault();
     },
     async dropCard() {
       if (this.droppingList) {
-        if (this.draggingCard.listId !== this.droppingList._id){
-          const fromList = this.lists.find(list => list._id === this.draggingCard.listId)
-          const toList = this.lists.find(list => list._id === this.droppingList._id)
+        if (this.draggingCard.listId !== this.droppingList._id) {
+          const fromList = this.lists.find(
+            list => list._id === this.draggingCard.listId
+          );
+          const toList = this.lists.find(
+            list => list._id === this.droppingList._id
+          );
           this.draggingCard.listId = this.droppingList._id;
           await this.draggingCard.save();
-          this.createActivity(`**${this.user.user.displayName}** moved card **${this.draggingCard.title}** from **${fromList.name}** to **${toList.name}**`)
+          this.createActivity(
+            `**${this.user.user.displayName}** moved card **${this.draggingCard.title}** from **${fromList.name}** to **${toList.name}**`
+          );
         }
       }
       this.droppingList = null;
-      this.draggingCard = null
+      this.draggingCard = null;
     },
     markModify(text) {
       return marked(text);
-    },
+    }
   },
   computed: {
-    ...mapState('auth', { user: 'payload' }),
-    ...mapState('boards', {
-    loadingBoard: 'isGetPending',
-    boardsError: 'errorOnGet',
+    ...mapState("auth", { user: "payload" }),
+    ...mapState("lists", {
+      loadingLists: "isFindPending",
+      creatingList: "isCreatePending",
+      listsError: "errorOnfind"
     }),
-      ...mapState('lists', {
-      loadingLists: 'isFindPending',
-      creatingList: 'isCreatePending',
-      listsError: 'errorOnfind',
-      }),      
-      ...mapState('activities', {
-      loadingActivities: 'isFindPending',
-      creatingActivity: 'isCreatePending',
-      }),
-    ...mapState('cards', {
-    cardsError: 'errorOnfind',
+    ...mapState("activities", {
+      loadingActivities: "isFindPending",
+      creatingActivity: "isCreatePending"
     }),
-    ...mapGetters('lists', { findListsInStore: 'find'}),
-    ...mapGetters('cards', { findCardsInStore: 'find'}),
-    ...mapGetters('activities', { findActivitiesInStore: 'find'}),
+    ...mapState("cards", {
+      cardsError: "errorOnfind"
+    }),
+    ...mapGetters("lists", { findListsInStore: "find" }),
+    ...mapGetters("cards", { findCardsInStore: "find" }),
+    ...mapGetters("activities", { findActivitiesInStore: "find" }),
     activities() {
-        return this.findActivitiesInStore({
+      return this.findActivitiesInStore({
         query: {
-          boardId: this.$route.params.id,
+          boardId: this.$route.params.id
         }
-      }).data
+      }).data;
     },
     lists() {
       return this.findListsInStore({
         query: {
-          boardId: this.$route.params.id,
+          boardId: this.$route.params.id
         }
-      }).data
+      }).data;
     },
     cards() {
       return this.findCardsInStore({
         query: {
-          boardId: this.$route.params.id,
+          boardId: this.$route.params.id
         }
-      }).data
+      }).data;
     },
     cardsByListId() {
       return this.cards.reduce((byId, card) => {
         byId[card.listId] = byId[card.listId] || [];
         byId[card.listId].push(card);
         return byId;
-      }, {})
+      }, {});
     },
     activitiesByDate() {
-      return this.activities.slice().reverse()
-    },
-  },
+      return this.activities.slice().reverse();
+    }
+  }
 };
 </script>
 <style scoped>

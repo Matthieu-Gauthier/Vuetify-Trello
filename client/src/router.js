@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import store from './store/store';
-
 import SignUp from './views/SignUp.vue';
 import Login from './views/Login.vue';
 import Boards from './views/Boards.vue';
@@ -18,6 +17,7 @@ function isLoggedIn(to, from, next) {
   });
 }
 export default new Router({
+
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
@@ -54,5 +54,5 @@ export default new Router({
       component: Board,
       beforeEnter: isLoggedIn
     },
-  ]
+  ],
 })

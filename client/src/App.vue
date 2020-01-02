@@ -23,24 +23,15 @@
       >
         <v-icon>mdi-eye</v-icon>
       </v-btn>
-      <v-btn
-        class="mx-2"
-        text
-        color="white"
-        v-if="user"
-      >{{user.user.displayName}}</v-btn>
+      <v-btn class="mx-2" text color="white" v-if="user">{{user.user.displayName}}</v-btn>
       <v-avatar>
-        <img v-if="user" :src="user.user.imageUrl">
+        <img v-if="user" :src="user.user.imageUrl" />
       </v-avatar>
-      <v-btn
-        class="mx-2"
-        v-if="showLogout"
-        @click="logout"
-        text
-        color="white"
-      >Logout</v-btn>
+      <v-btn class="mx-2" v-if="showLogout" @click="logout" text color="white">Logout</v-btn>
     </v-app-bar>
-    <v-content>
+    <v-content
+      :style="'background-image: url('+$store.state.background+'); background-size:cover;'"
+    >
       <router-view></router-view>
     </v-content>
     <v-footer :padless="true">
@@ -73,15 +64,14 @@ function ifLogin(store, data) {
 
 export default {
   name: "App",
-  components: {
-  },
+  components: {},
   computed: {
-    ...mapState('auth', { user: 'payload' }),
+    ...mapState("auth", { user: "payload" })
   },
   data: vm => ({
     showLogin: false,
     showSignUp: false,
-    showLogout: true,
+    showLogout: true
   }),
   updated() {
     ifLogin(this.$store, this.$data);
@@ -89,19 +79,22 @@ export default {
   methods: {
     ...mapActions("auth", { authLogout: "logout" }),
     ...mapActions("auth", { authenticate: "authenticate" }),
-    ...mapActions(['setShowActivities']),
+    ...mapActions(["setShowActivities"]),
     changeShowActivities() {
-      this.setShowActivities()
+      this.setShowActivities();
     },
     logout() {
-      this.authLogout()
-        .then(() => {
-          this.$data.showLogin = true;
-          this.$data.showSignUp = true;
-          this.$data.showLogout = false;
-          this.$router.push("/login");
-        })
+      this.authLogout().then(() => {
+        this.$data.showLogin = true;
+        this.$data.showSignUp = true;
+        this.$data.showLogout = false;
+        this.$router.push("/login");
+      });
     }
+  },
+  ...mapActions(["setBackground"]),
+  changeBackground() {
+    this.setBackground("");
   }
 };
 </script>

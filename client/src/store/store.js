@@ -20,6 +20,7 @@ export default new Vuex.Store({
   state: {
     activeListCreateCard: '',
     ShowActivities: true,
+    background: '',
   },
   getters: {},
   mutations: {
@@ -30,6 +31,10 @@ export default new Vuex.Store({
     CHANGE_SHOW_ACTIVITIES(state) {
       const currentState = state;
       currentState.ShowActivities = !currentState.ShowActivities
+    },
+    SET_BACKGROUND(state, mybackground) {
+      const currentState = state;
+      currentState.background = mybackground
     }
   },
   actions: {
@@ -38,6 +43,9 @@ export default new Vuex.Store({
     },
     setShowActivities(context) {
       context.commit('CHANGE_SHOW_ACTIVITIES');
+    },
+    setBackground(context, mybackground) {
+      context.commit('SET_BACKGROUND', mybackground);
     },
   },
   plugins: [
