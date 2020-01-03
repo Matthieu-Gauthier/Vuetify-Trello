@@ -1,5 +1,6 @@
 <template>
   <v-container fluid @click="createMode = false">
+    <Alerte :message="Message" :type="TypeMessage"></Alerte>
     <loading-bar v-if="loading"></loading-bar>
     <v-row v-if="!loading" align="start" justify="start">
       <v-col
@@ -33,7 +34,11 @@
             </v-card-title>
             <v-card-actions class="fill-height">
               <v-spacer></v-spacer>
-              <v-btn class="white--text" :to="{ name: 'board', params: { id: board._id } }" icon>
+              <v-btn
+                class="white--text"
+                :to="{ name: 'board', params: { id: board._id } }"
+                icon
+              >
                 <v-icon>mdi-arrow-right-bold-circle</v-icon>
               </v-btn>
             </v-card-actions>
@@ -56,16 +61,20 @@ import { notEmptyRules } from "@/validators";
 import { mapActions, mapState, mapGetters } from "vuex";
 import CreateBoard from "../components/CreateBoard";
 import LoadingBar from "../components/LoadingBar";
+import Alerte from "../components/Alerte";
 
 export default {
   name: "boards",
   components: {
     CreateBoard,
-    LoadingBar
+    LoadingBar,
+    Alerte
   },
   data: () => ({
     valid: false,
     createMode: false,
+    Message: 'bonjour ',
+    TypeMessage: 'error',
     board: {
       name: "",
       background: "",
@@ -89,18 +98,27 @@ export default {
       if (this.valid) {
         const { Board } = this.$FeathersVuex.api;
         const board = new Board(this.board);
+        board.name = "";
         board.save().then(() => {
           this.board = {
             name: "",
             background: "",
             memberIds: []
           };
-        });
+        }).catch((err => {
+          this.TypeMessage = "error";
+          this.Message = err.message;
+        }))
       }
     },
     deleteBoard(board) {
-      console.log(board);
-      board.remove();
+     board.remove().then(() => {
+        this.TypeMessage = "success";
+        this.Message = "Board deleted";
+     }).catch((err) => {
+        this.TypeMessage = "error";
+        this.Message = err.message;
+      });
     }
   },
   computed: {
